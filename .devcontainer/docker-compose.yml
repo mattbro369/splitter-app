@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/workspaces/splitter-app:cached
+    command: sleep infinity
+    depends_on:
+      - db
+    ports:
+      - "5000:5000" # exposes backend
+    networks:
+      - app-network
+
+  db:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: splitter
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:
+
+networks:
+  app-network:
+    driver: bridge
